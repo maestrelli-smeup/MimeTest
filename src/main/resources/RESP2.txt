@@ -1,0 +1,5 @@
+Content-Type: text/xml; charset=UTF-8; type="application/soap+xml";
+Content-Transfer-Encoding: binary
+Content-ID: <root.message@cxf.apache.org>
+
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Body><stcdsext:getDataResponse xmlns:stcds="http://stc.daimler.com/2009/08/DS" xmlns:stcdsext="http://stc.daimler.com/2009/08/DS/ext" stcdsext:version="1.4"><stcdsext:getDataResult><stcds:data><stcds:binaryData>90ec5cb3-fae0-4085-8d31-8443e39dc45d@apache.org</stcds:binaryData></stcds:data><stcds:responseCode>STARCDS001000</stcds:responseCode><stcds:dataDescriptor><stcds:type>PC_MASTER_DATA</stcds:type><stcds:businessID>MB-PKW_543_257</stcds:businessID><stcds:sequenceNo>1</stcds:sequenceNo><stcds:interfaceVersion>1</stcds:interfaceVersion><stcds:addressee><stcds:gssn>GS0004508</stcds:gssn><stcds:vbet>54312010</stcds:vbet></stcds:addressee></stcds:dataDescriptor></stcdsext:getDataResult></stcdsext:getDataResponse></soap:Body></soap:Envelope>
