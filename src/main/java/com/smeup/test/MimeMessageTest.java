@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.mail.BodyPart;
 import javax.mail.Header;
@@ -20,16 +21,13 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-public class MimeMessageTest
-{
+public class MimeMessageTest {
 	
 	private static final String _PATH = "/home/skioda86/git/MimeTest/src/main/resources/RESP3.txt";
 	private static final String _MULTIPART_FORM_DATA = "multipart/form-data";
 
-    public static void main(String[] args)
-    {
-        try
-        {
+    public static void main(String[] args) {
+        try {
         	MimeMultipart vMMP= new MimeMultipart(
         			new ByteArrayDataSource(
         					new FileInputStream(new File(_PATH)), _MULTIPART_FORM_DATA));
@@ -43,24 +41,21 @@ public class MimeMessageTest
             	new MessagingException();
             }
         }
-        catch(FileNotFoundException ex)
-        {
+        catch(FileNotFoundException ex) {
             // TODO Auto-generated catch block
             ex.printStackTrace();
         }
-        catch(MessagingException ex)
-        {
+        catch(MessagingException ex) {
             // TODO Auto-generated catch block
             ex.printStackTrace();
         }
-        catch(IOException ex)
-        {
+        catch(IOException ex) {
             // TODO Auto-generated catch block
             ex.printStackTrace();
         }
     }
     
-    private static void processMultiPart(MimeMultipart aMMP, int aPart) throws MessagingException, IOException{
+    private static void processMultiPart(MimeMultipart aMMP, int aPart) throws MessagingException, IOException {
     	
      	for (int i = 0; i < aPart; i++) {
     		
@@ -73,22 +68,25 @@ public class MimeMessageTest
 	        	vHeaderList.add((Header) vHeaders.nextElement());
 	        }
 			
+			Pattern pattern = Pattern.compile("(^|[^=\\\"])+text/(.*)?;");
+			Matcher patternMatcher = pattern.matcher(bodyPart.getContentType());
 			
-			if(bodyPart.getContentType().matches("text/(.*);")){
-//				log("Part: " + i + "Param: " + bodyPart.getContentType() + "\n" + vHeaderList.toString());
+			if(patternMatcher.find()){
+				log("\nPart: " + i + "\nContentType: " + bodyPart.getContentType());
 				processTextData((String) bodyPart.getContent(), vHeaderList); 
 			}
 			
-			// TODO sistemare questa regex perchè errata!!!
-			if(bodyPart.getContentType().matches("application/(.*)")) {  
-//				log("Part: " + i + "Param: " + bodyPart.getContentType() + "\n" + vHeaderList.toString());
+			pattern = Pattern.compile("(^|[^=\"])+application/(.*);");
+			patternMatcher = pattern.matcher(bodyPart.getContentType());
+			
+			if(patternMatcher.find()) {  
+				log("\nPart: " + i + "\nContentType: " + bodyPart.getContentType());
 				processBinaryData(bodyPart.getInputStream(), vHeaderList);
 			}
     	}
     }
     
-    private static void processTextData(String aText, ArrayList<Header> aHeaderList)
-    {	
+    private static void processTextData(String aText, ArrayList<Header> aHeaderList) {	
     	Document result = createDocument(aText,aHeaderList);
         log(result.asXML().toString());
     }
