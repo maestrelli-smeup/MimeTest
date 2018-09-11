@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,7 +24,10 @@ import org.dom4j.Element;
 
 public class MimeMessageTest {
 	
-	private static final String _PATH = "/home/skioda86/git/MimeTest/src/main/resources/RESP3.txt";
+//	private static final String _PATH = "/home/skioda86/git/MimeTest/src/main/resources/TEST.txt";
+//	private static final String _PATH = "/home/skioda86/git/MimeTest/src/main/resources/TEST2.txt";
+//	private static final String _PATH = "/home/skioda86/git/MimeTest/src/main/resources/TEST3.txt";
+	private static final String _PATH = "/home/skioda86/response";
 	private static final String _MULTIPART_FORM_DATA = "multipart/form-data";
 
     public static void main(String[] args) {
@@ -92,6 +96,9 @@ public class MimeMessageTest {
     }
     
     private static void processBinaryData(InputStream aStream, ArrayList<Header> aHeaderList) {
+    	
+//    	createFile(aStream);
+    	 
     	String charset = null;
     	
     	for (Header header : aHeaderList) {
@@ -115,6 +122,35 @@ public class MimeMessageTest {
     	Document result = createDocument(binaryEncoded,aHeaderList);
     	
     	log(result.asXML().toString());
+    }
+    
+    
+    public void createFile(InputStream aStream) {
+    	FileOutputStream vStream= null;
+        try
+        {
+            vStream= new FileOutputStream(new File("/home/skioda86/git/MimeTest/src/main/resources/prova"+".tgz"));
+            
+            byte[] buffer    =   new byte[10*1024];
+
+            for (int length; (length = aStream.read(buffer)) != -1; ){
+                vStream.write(buffer, 0, length);
+            }
+
+            aStream.close();
+            vStream.close();
+            
+        }
+        catch(FileNotFoundException ex)
+        {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        }
+        catch(IOException ex)
+        {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        }
     }
     
     
