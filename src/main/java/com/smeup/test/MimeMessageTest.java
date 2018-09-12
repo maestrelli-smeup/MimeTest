@@ -27,20 +27,41 @@ public class MimeMessageTest {
 //	private static final String _PATH = "/home/skioda86/git/MimeTest/src/main/resources/TEST.txt";
 //	private static final String _PATH = "/home/skioda86/git/MimeTest/src/main/resources/TEST2.txt";
 //	private static final String _PATH = "/home/skioda86/git/MimeTest/src/main/resources/TEST3.txt";
-	private static final String _PATH = "/home/skioda86/response";
+	private static final String _PATH = "/home/olimaest/Lavoro/Dati prova/Agricar/RESP.txt";
 	private static final String _MULTIPART_FORM_DATA = "multipart/form-data";
 
     public static void main(String[] args) {
         try {
+        	String[] vRes= processResponse(new FileInputStream(new File(_PATH)));
+        	if(vRes!=null)
+        	{
+        		for (int i = 0; i < vRes.length; i++) {
+					String vPartToString = vRes[i];
+					System.out.println(vPartToString);
+				}
+        	}
+        }
+        catch(FileNotFoundException ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        }
+        catch(IOException ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        }
+    }
+    
+    public static String[] processResponse(InputStream aStream)
+    {
+    	String[] vRet= null;
+        try {
         	MimeMultipart vMMP= new MimeMultipart(
-        			new ByteArrayDataSource(
-        					new FileInputStream(new File(_PATH)), _MULTIPART_FORM_DATA));
+        			new ByteArrayDataSource(aStream, _MULTIPART_FORM_DATA));
         	
             int vPart= vMMP.getCount();            
 //            log("n. part= " + vPart);
-            
             if(vPart > 1) {
-            	processMultiPart(vMMP, vPart);
+            	vRet= processMultiPart(vMMP, vPart);
             }else {
             	new MessagingException();
             }
@@ -57,10 +78,11 @@ public class MimeMessageTest {
             // TODO Auto-generated catch block
             ex.printStackTrace();
         }
+    	return vRet;
     }
     
-    private static void processMultiPart(MimeMultipart aMMP, int aPart) throws MessagingException, IOException {
-    	
+    private static String[] processMultiPart(MimeMultipart aMMP, int aPart) throws MessagingException, IOException {
+    	String[] vRet= new String[aPart];
      	for (int i = 0; i < aPart; i++) {
     		
 			BodyPart bodyPart = aMMP.getBodyPart(i);
@@ -77,7 +99,7 @@ public class MimeMessageTest {
 			
 			if(patternMatcher.find()){
 				log("\nPart: " + i + "\nContentType: " + bodyPart.getContentType());
-				processTextData((String) bodyPart.getContent(), vHeaderList); 
+				vRet[i]= processTextData((String) bodyPart.getContent(), vHeaderList); 
 			}
 			
 			pattern = Pattern.compile("(^|[^=\"])+application/(.*);");
@@ -85,18 +107,22 @@ public class MimeMessageTest {
 			
 			if(patternMatcher.find()) {  
 				log("\nPart: " + i + "\nContentType: " + bodyPart.getContentType());
-				processBinaryData(bodyPart.getInputStream(), vHeaderList);
+				vRet[i]= processBinaryData(bodyPart.getInputStream(), vHeaderList);
 			}
     	}
+     	return vRet;
     }
     
-    private static void processTextData(String aText, ArrayList<Header> aHeaderList) {	
+    private static String processTextData(String aText, ArrayList<Header> aHeaderList) {	
+    	String vRet= null;
     	Document result = createDocument(aText,aHeaderList);
-        log(result.asXML().toString());
+    	vRet= result.asXML().toString();
+        log(vRet);
+        return vRet;
     }
     
-    private static void processBinaryData(InputStream aStream, ArrayList<Header> aHeaderList) {
-    	
+    private static String processBinaryData(InputStream aStream, ArrayList<Header> aHeaderList) {
+    	String vRet= null;
 //    	createFile(aStream);
     	 
     	String charset = null;
@@ -121,7 +147,9 @@ public class MimeMessageTest {
     	String binaryEncoded = createBase64(aStream,charset);
     	Document result = createDocument(binaryEncoded,aHeaderList);
     	
-    	log(result.asXML().toString());
+    	vRet= result.asXML().toString();
+    	log(vRet);
+    	return vRet;
     }
     
     
@@ -193,9 +221,7 @@ public class MimeMessageTest {
     	for (Header header : aHeaderList) {
     		element.addAttribute(header.getName(),header.getValue());
 		}
-    	
-    	Element cData = root.addCDATA(aText);
-    	
+    	element.addCDATA(aText);
     	return doc;
     }
 
