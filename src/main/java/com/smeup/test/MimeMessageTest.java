@@ -157,7 +157,7 @@ public class MimeMessageTest {
     	FileOutputStream vStream= null;
         try
         {
-            vStream= new FileOutputStream(new File("/home/maeoli/git/MimeTest/src/main/resources/prova"+".tgz"));
+            vStream= new FileOutputStream(new File("/home/olimaest/git/MimeTest/src/main/resources/prova"+".tgz"));
             
             byte[] buffer    =   new byte[10*1024];
 
